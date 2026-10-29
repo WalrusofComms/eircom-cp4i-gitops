@@ -1,0 +1,33 @@
+apiVersion: mq.ibm.com/v1beta1
+kind: QueueManager
+metadata:
+  name: qmgr-gitops
+  namespace: mq-argocd
+spec:
+  license:
+    accept: true
+    license: L-SJZL-NMUUCT
+    use: NonProduction
+  version: 9.4.5.1-r1
+  queueManager:
+    name: QMGRGITOPS
+    availability:
+      type: SingleInstance
+    mqsc:
+    - configMap:
+        name: qmgr-gitops-mqsc
+        items:
+        - gitops.mqsc
+    storage:
+      defaultClass: ocs-storagecluster-ceph-rbd
+      queueManager:
+        type: persistent-claim
+  template:
+    pod:
+      containers:
+      - env:
+        - name: MQSNOAUT
+          value: "yes"
+        name: qmgr
+  web:
+    enabled: true
